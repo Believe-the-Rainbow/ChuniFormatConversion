@@ -77,6 +77,8 @@ def ask_folder(title):
 
 def find_music_root(sel):
     """From a picked folder, locate the game chart library (data/music)."""
+    if not os.path.isdir(sel):
+        return None
     cand = os.path.join(sel, 'data', 'music')
     if os.path.isdir(cand):
         return sel
@@ -89,6 +91,8 @@ def find_music_root(sel):
 
 def find_a000(sel):
     """From a picked folder, locate the arcade data root (music/ + cueFile/)."""
+    if not os.path.isdir(sel):
+        return None
     if os.path.isdir(os.path.join(sel, 'music')):
         return sel
     for name in os.listdir(sel):
