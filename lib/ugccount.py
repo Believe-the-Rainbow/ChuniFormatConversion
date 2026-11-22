@@ -816,6 +816,9 @@ def finalize(ch):
     q = 0
     Vc = 0
     Z_ = he = UL = bR = eS = 0
+    import collections as _c2
+    _dbg = _c2.Counter()
+    _on = bool(os.environ.get('UGCCOUNT_DEBUG'))
     bm = []
     create_ok = (CAT_TAP, CAT_AIR, T_SLIDEHEAD, T_HOLDHEAD, T_AIRCHAIN,
                  T_EXHOLD, T_AHOLD, T_AIRSTEP, T_CLICK, 0x3, T_BARLINE)
@@ -872,10 +875,12 @@ def finalize(ch):
             if note.WG == 1:
                 q += 1
                 bR += 1
+                _dbg['C头WG1'] += 1
             for c in note._c:
                 if c.An == T_AIRSTEP:
                     q += 1
                     bR += 1
+                    _dbg['C链tB'] += 1
 
         if cat == CAT_TAP or cat == CAT_AIR or raw.An in (T_SLIDEHEAD, T_HOLDHEAD):
             q += 1
@@ -886,6 +891,7 @@ def finalize(ch):
             Z_ += 1
         elif (raw.An & MASK) == CAT_AIR:
             bR += 1
+            _dbg['air头'] += 1
         elif raw.An == T_FLK:
             eS += 1
 
@@ -955,6 +961,7 @@ def finalize(ch):
                 if child.An != T_AIRTAIL and child.An != T_EXHOLD_F:
                     q += 1
                     bR += 1
+                    _dbg['slide判定子点'] += 1
                 prevpt = child
             if not (ch.fa and tail.IZ):
                 for t, gr in steps:
@@ -966,11 +973,14 @@ def finalize(ch):
                     if not gr:
                         q += 1
                         bR += 1
+                        _dbg['slide步进'] += 1
                 note._c.sort(key=lambda c: c.Wu)
 
     ch.q = q
     ch.Vc = Vc
     ch.bH = {'Z_': Z_, 'he': he, 'UL': UL, 'bR': bR, 'eS': eS}
+    if _on:
+        ch._dbg = dict(_dbg)
 
 
 def count_text(text):
